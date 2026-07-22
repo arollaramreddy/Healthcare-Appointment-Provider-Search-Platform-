@@ -7,8 +7,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
+
 @RestController
 @RequestMapping("/providers")
+@CrossOrigin(origins = "*")
 public class ProviderController {
     private final ProviderService svc;
 
