@@ -6,8 +6,10 @@ import com.example.appointments.exception.ConflictException;
 import com.example.appointments.exception.ResourceNotFoundException;
 import com.example.appointments.model.Provider;
 import com.example.appointments.repository.ProviderRepository;
+import com.example.appointments.search.ProviderChangedEvent;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -18,9 +20,11 @@ import java.util.List;
 @Service
 public class ProviderService {
     private final ProviderRepository providerRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public ProviderService(ProviderRepository providerRepository) {
+    public ProviderService(ProviderRepository providerRepository, ApplicationEventPublisher eventPublisher) {
         this.providerRepository = providerRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Transactional
@@ -31,7 +35,9 @@ public class ProviderService {
         Provider provider = new Provider(request.name().trim(), request.specialty().trim(), request.city().trim(),
                 request.state().toUpperCase(), request.npi());
         apply(provider, request);
-        return ProviderResponse.from(providerRepository.save(provider));
+        Provider saved = providerRepository.save(provider);
+        eventPublisher.publishEvent(new ProviderChangedEvent(saved.getId()));
+        return ProviderResponse.from(saved);
     }
 
     @Transactional(readOnly = true)
@@ -55,6 +61,7 @@ public class ProviderService {
         provider.setState(request.state().toUpperCase());
         provider.setNpi(request.npi());
         apply(provider, request);
+        eventPublisher.publishEvent(new ProviderChangedEvent(provider.getId()));
         return ProviderResponse.from(provider);
     }
 
