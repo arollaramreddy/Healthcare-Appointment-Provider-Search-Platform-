@@ -41,7 +41,7 @@ public class AppointmentService {
         Patient patient = patientRepository.findById(request.patientId())
                 .orElseThrow(() -> new ResourceNotFoundException("Patient " + request.patientId() + " was not found"));
         Provider provider = lockProvider(request.providerId());
-        ensureAvailable(provider.getId(), request.startTime(), request.endTime(), null);
+        ensureAvailable(request.providerId(), request.startTime(), request.endTime(), null);
         Appointment appointment = new Appointment(patient, provider, request.startTime(), request.endTime(),
                 request.reason().trim());
         return AppointmentResponse.from(appointmentRepository.save(appointment));
