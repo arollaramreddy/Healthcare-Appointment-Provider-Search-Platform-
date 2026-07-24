@@ -144,6 +144,4 @@ All production settings have environment-variable overrides. See [.env.example](
 | `CORS_ALLOWED_ORIGINS` | `http://localhost:3000` |
 | `PORT` | `8080` |
 
-## Important production follow-ups
 
-This is a portfolio-grade scheduling service, not a deployed HIPAA-compliant system. Before handling protected health information, add authentication and role-based authorization, audit logging, encryption/key management, secret storage, data retention policies, rate limiting, and operational backup/restore procedures. The reindex endpoint should also be restricted to an administrative role.
